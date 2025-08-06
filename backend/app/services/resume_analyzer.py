@@ -1,12 +1,13 @@
 import os
 import json
 from typing import Tuple, List
+import logging
 
 from dotenv import load_dotenv
 import openai
 from openai.error import RateLimitError
 
-
+logging.basicConfig(level=logging.INFO)
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 print(openai.organization, openai.api_key)
@@ -19,7 +20,7 @@ def analyze_resume(
     prompt = f"""
     You are an expert hiring manager and HR specialist.
     Compare the following candidate resume to the job description.
-    Return ONLY valid JSON with three keys:
+    Return ONLY the JSON object (no markdown formatting or explanation) with three keys:
       1. score — a number between 0.0 (no match) and 1.0 (perfect match)
       2. missing_keywords — an array of strings for skills/terms in the job description but absent in the resume
       3. suggestions — an array of reasonable improvement suggestions
@@ -42,7 +43,7 @@ def analyze_resume(
                 {"role": "user", "content": prompt}
             ],
             temperature=0.0,
-            max_tokens=200
+            max_tokens=300
         )
     except RateLimitError:
         from fastapi import HTTPException
@@ -52,7 +53,26 @@ def analyze_resume(
         )
 
     content = response.choices[0].message.content.strip()
-    data = json.loads(content)
+    logging.info(f"Raw model output:\n{content!r}")
+    try:
+        if content.startswith("```"):
+            lines = content.splitlines()
+            if lines[0].startswith("```"):
+                lines = lines[1:]
+            if lines[-1].startswith("```"):
+                lines = lines[:-1]
+            content = "\n".join(lines).strip()
+
+        data = json.loads(content)
+    except json.JSONDecodeError:
+        logging.error("Failed to parse JSON from model!", exc_info=True)
+        from fastapi import HTTPException
+        raise HTTPException(
+            status_code=500,
+            detail=f"Invalid JSON from AI:\n{content}"
+        )
+
+
 
     return (
         float(data["score"]),
