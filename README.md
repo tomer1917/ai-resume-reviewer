@@ -1,4 +1,3 @@
-````markdown
 # AI Resume Reviewer
 
 A simple full-stack application that uses an LLM to compare a candidate’s resume (PDF) against a job description and return a match score, missing keywords, and actionable suggestions.
@@ -24,7 +23,6 @@ A simple full-stack application that uses an LLM to compare a candidate’s resu
 - **PDF parsing**: `pdfminer.six`  
 - **Frontend**: React (Vite + JSX), Axios  
 - **Dev tools**: Git, GitHub, npm, virtual environments  
-- **Optional**: Docker & Docker Compose  
 
 ---
 
@@ -35,7 +33,7 @@ A simple full-stack application that uses an LLM to compare a candidate’s resu
 ```bash
 git clone https://github.com/YOUR_USERNAME/ai-resume-reviewer.git
 cd ai-resume-reviewer
-````
+```
 
 ### 2. Backend Setup
 
@@ -51,20 +49,17 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-1. **Create** a file named `.env` in `backend/` (it’s already in `.gitignore`):
-
+1. **Create** a file named `.env` in `backend/` (it’s already in `.gitignore`):  
    ```dotenv
    OPENAI_API_KEY=sk-your_real_key_here
    # Optional for dev-only mock mode:
    DEV_MOCK=true
    ```
 2. **Run** the backend server:
-
    ```bash
    uvicorn app.main:app --reload
    ```
 3. **Verify** health check in your browser or via `curl`:
-
    ```
    GET http://127.0.0.1:8000/health
    → {"status":"ok"}
@@ -77,10 +72,9 @@ cd ../frontend
 npm install
 ```
 
-* **Proxy** to the backend is configured in `vite.config.js`—you can call `/review` directly.
+- **Proxy** to the backend is configured in `vite.config.js`—you can call `/review` directly.
 
 1. **Start** the React dev server:
-
    ```bash
    npm run dev
    ```
@@ -90,9 +84,9 @@ npm install
 
 ## 💡 Usage
 
-1. In the frontend UI, **select** a PDF resume.
-2. **Paste** the job description text.
-3. Click **Analyze Resume**.
+1. In the frontend UI, **select** a PDF resume.  
+2. **Paste** the job description text.  
+3. Click **Analyze Resume**.  
 4. View your **match score**, **missing keywords**, and **suggestions**.
 
 ---
@@ -121,49 +115,16 @@ ai-resume-reviewer/
 
 ---
 
-## 🐳 (Optional) Docker Compose
-
-If you prefer one-command startup, add a `docker-compose.yml`:
-
-```yaml
-version: '3.8'
-services:
-  backend:
-    build: ./backend
-    ports:
-      - "8000:8000"
-    environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-  frontend:
-    build: ./frontend
-    ports:
-      - "5173:5173"
-```
-
-Then run:
-
-```bash
-# from project root
-docker-compose up --build
-```
-
----
-
 ## 🤝 Contributing
 
-1. Fork the repo
-2. Create a feature branch (`git checkout -b feature/YourFeature`)
-3. Commit your changes (`git commit -m "feat: add …"`)
-4. Push to your branch (`git push origin feature/YourFeature`)
-5. Open a Pull Request
+1. Fork the repo  
+2. Create a feature branch (`git checkout -b feature/YourFeature`)  
+3. Commit your changes (`git commit -m "feat: add …"`)  
+4. Push to your branch (`git push origin feature/YourFeature`)  
+5. Open a Pull Request  
 
 ---
 
 ## 📄 License
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
-
----
-
-```
-```
