@@ -4,10 +4,12 @@ from typing import Tuple, List
 
 from dotenv import load_dotenv
 import openai
+from openai.error import RateLimitError
 
 
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
+print(openai.organization, openai.api_key)
 
 
 def analyze_resume(
@@ -32,16 +34,22 @@ def analyze_resume(
     {job_description}
     \"\"\"
     """
-
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": "You are a precise JSON generator."},
-            {"role": "user", "content": prompt}
-        ],
-        temperature=0.0,
-        max_tokens=500
-    )
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are a precise JSON generator."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.0,
+            max_tokens=200
+        )
+    except RateLimitError:
+        from fastapi import HTTPException
+        raise HTTPException(
+            status_code=503,
+            detail="OpenAI rate limit exceeded. Please try again later. "
+        )
 
     content = response.choices[0].message.content.strip()
     data = json.loads(content)
